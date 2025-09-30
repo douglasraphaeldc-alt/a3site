@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Respiratório Interativo</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .anatomy-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .info-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .respiratory-system {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            margin: 20px 0;
+        }
+
+        .organ {
+            position: absolute;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .organ:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .nose {
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 40px;
+            background: #ff6b6b;
+            border-radius: 50%;
+        }
+
+        .trachea {
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 120px;
+            background: #4ecdc4;
+        }
+
+        .lungs {
+            top: 180px;
+            left: 30%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 200px;
+            background: #45b7d1;
+            border-radius: 60px 60px 40px 40px;
+        }
+
+        .lungs.right {
+            left: 70%;
+        }
+
+        .bronchi {
+            top: 200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 20px;
+            background: #96ceb4;
+        }
+
+        .diaphragm {
+            bottom: 20px;
+            left: 20%;
+            width: 60%;
+            height: 30px;
+            background: #feca57;
+            border-radius: 50px;
+        }
+
+        .breathing-animation {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border: 3px solid #667eea;
+            border-radius: 50%;
+            opacity: 0;
+        }
+
+        .breathing-animation.active {
+            animation: breathe 3s infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% { 
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.3;
+            }
+            50% { 
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 0.7;
+            }
+        }
+
+        .organ-info {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 5px solid #667eea;
+        }
+
+        .organ-info h3 {
+            color: #667eea;
+            margin-top: 0;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn.active {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        }
+
+        .facts-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-top: 40px;
+        }
+
+        .facts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .fact-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .fact-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .fact-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .respiratory-system {
+                height: 400px;
+            }
+            
+            .controls {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🫁 Sistema Respiratório</h1>
+            <p>Explore e aprenda sobre como respiramos de forma interativa!</p>
+        </div>
+
+        <div class="main-content">
+            <div class="anatomy-section">
+                <h2>Anatomia Interativa</h2>
+                <p>Clique nos órgãos para aprender mais sobre cada um:</p>
+                
+                <div class="respiratory-system">
+                    <div class="breathing-animation"></div>
+                    
+                    <div class="organ nose" data-organ="nose">
+                        👃 Nariz
+                    </div>
+                    
+                    <div class="organ trachea" data-organ="trachea">
+                        Traqueia
+                    </div>
+                    
+                    <div class="organ lungs left" data-organ="lungs">
+                        Pulmão
+                    </div>
+                    
+                    <div class="organ lungs right" data-organ="lungs">
+                        Pulmão
+                    </div>
+                    
+                    <div class="organ bronchi" data-organ="bronchi">
+                        Brônquios
+                    </div>
+                    
+                    <div class="organ diaphragm" data-organ="diaphragm">
+                        Diafragma
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button class="btn" onclick="startBreathing()">▶️ Simular Respiração</button>
+                    <button class="btn" onclick="stopBreathing()">⏹️ Parar</button>
+                    <button class="btn" onclick="showProcess()">🔄 Processo Completo</button>
+                </div>
+            </div>
+
+            <div class="info-panel">
+                <div class="organ-info" id="organ-info">
+                    <h3>🫁 Bem-vindo ao Sistema Respiratório!</h3>
+                    <p>O sistema respiratório é responsável por levar oxigênio para o nosso corpo e remover o dióxido de carbono.</p>
+                    <p><strong>Clique nos órgãos</strong> ao lado para descobrir mais sobre cada parte!</p>
+                    <ul>
+                        <li>👃 <strong>Nariz:</strong> Filtra e aquece o ar</li>
+                        <li>🫁 <strong>Pulmões:</strong> Fazem a troca gasosa</li>
+                        <li>💨 <strong>Diafragma:</strong> Músculo da respiração</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="facts-section">
+            <h2>📊 Curiosidades Incríveis</h2>
+            <div class="facts-grid">
+                <div class="fact-card">
+                    <div class="fact-number">20.000</div>
+                    <p>Respirações por dia em média</p>
+                </div>
+                <div class="fact-card">
+                    <div class="fact-number">600M</div>
+                    <p>Alvéolos em nossos pulmões</p>
+                </div>
+                <div class="fact-card">
+                    <div class="fact-number">70m²</div>
+                    <p>Área total dos pulmões</p>
+                </div>
+                <div class="fact-card">
+                    <div class="fact-number">12-20</div>
+                    <p>Respirações por minuto (adulto)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const organInfo = {
+            nose: {
+                title: "👃 Nariz e Cavidade Nasal",
+                content: `
+                    <p><strong>Função:</strong> Primeira linha de defesa do sistema respiratório!</p>
+                    <ul>
+                        <li>🌡️ <strong>Aquece</strong> o ar que entra</li>
+                        <li>💧 <strong>Umidifica</strong> o ar seco</li>
+                        <li>🦠 <strong>Filtra</strong> partículas e germes</li>
+                        <li>👃 <strong>Detecta</strong> odores</li>
+                    </ul>
+                    <p><em>Os pelos nasais funcionam como um filtro natural!</em></p>
+                `
+            },
+            trachea: {
+                title: "🫁 Traqueia",
+                content: `
+                    <p><strong>Função:</strong> O "tubo" principal do ar!</p>
+                    <ul>
+                        <li>📏 <strong>10-12 cm</strong> de comprimento</li>
+                        <li>🔄 <strong>Conduz</strong> ar para os pulmões</li>
+                        <li>🛡️ <strong>Protegida</strong> por anéis de cartilagem</li>
+                        <li>🧹 <strong>Limpa-se</strong> com cílios microscópicos</li>
+                    </ul>
+                    <p><em>Os anéis de cartilagem mantêm a traqueia sempre aberta!</em></p>
+                `
+            },
+            lungs: {
+                title: "🫁 Pulmões",
+                content: `
+                    <p><strong>Função:</strong> Os heróis da respiração!</p>
+                    <ul>
+                        <li>💨 <strong>Troca gasosa:</strong> O₂ entra, CO₂ sai</li>
+                        <li>🎈 <strong>Expandem</strong> e contraem 20.000x/dia</li>
+                        <li>🔬 <strong>600 milhões</strong> de alvéolos</li>
+                        <li>⚖️ <strong>Pulmão direito</strong> é maior (3 lobos vs 2)</li>
+                    </ul>
+                    <p><em>Se esticássemos todos os alvéolos, cobririam uma quadra de tênis!</em></p>
+                `
+            },
+            bronchi: {
+                title: "🌳 Brônquios e Bronquíolos",
+                content: `
+                    <p><strong>Função:</strong> A "árvore" respiratória!</p>
+                    <ul>
+                        <li>🌿 <strong>Ramificam-se</strong> como galhos de árvore</li>
+                        <li>📦 <strong>Distribuem</strong> ar pelos pulmões</li>
+                        <li>🔄 <strong>Brônquios principais</strong> → bronquíolos</li>
+                        <li>🎯 <strong>Terminam</strong> nos alvéolos</li>
+                    </ul>
+                    <p><em>Existem cerca de 23 gerações de ramificações!</em></p>
+                `
+            },
+            diaphragm: {
+                title: "💪 Diafragma",
+                content: `
+                    <p><strong>Função:</strong> O músculo mais importante da respiração!</p>
+                    <ul>
+                        <li>⬇️ <strong>Contrai:</strong> puxa ar para dentro (inspiração)</li>
+                        <li>⬆️ <strong>Relaxa:</strong> empurra ar para fora (expiração)</li>
+                        <li>🎯 <strong>Separa</strong> tórax do abdômen</li>
+                        <li>🔄 <strong>Trabalha</strong> automaticamente</li>
+                    </ul>
+                    <p><em>Você pode controlá-lo conscientemente, mas ele funciona sozinho!</em></p>
+                `
+            }
+        };
+
+        let breathingInterval;
+        let isBreathing = false;
+
+        // Adicionar event listeners para os órgãos
+        document.querySelectorAll('.organ').forEach(organ => {
+            organ.addEventListener('click', function() {
+                const organType = this.getAttribute('data-organ');
+                showOrganInfo(organType);
+                
+                // Destacar órgão clicado
+                document.querySelectorAll('.organ').forEach(o => o.style.border = 'none');
+                this.style.border = '3px solid #ff6b6b';
+            });
+        });
+
+        function showOrganInfo(organType) {
+            const info = organInfo[organType];
+            const infoPanel = document.getElementById('organ-info');
+            
+            infoPanel.innerHTML = `
+                <h3>${info.title}</h3>
+                ${info.content}
+            `;
+        }
+
+        function startBreathing() {
+            if (isBreathing) return;
+            
+            isBreathing = true;
+            const animation = document.querySelector('.breathing-animation');
+            animation.classList.add('active');
+            
+            // Animar pulmões
+            const lungs = document.querySelectorAll('.lungs');
+            
+            breathingInterval = setInterval(() => {
+                lungs.forEach(lung => {
+                    lung.style.transform = 'translateX(-50%) scale(1.1)';
+                    setTimeout(() => {
+                        lung.style.transform = 'translateX(-50%) scale(1)';
+                    }, 1500);
+                });
+            }, 3000);
+            
+            document.querySelector('button[onclick="startBreathing()"]').classList.add('active');
+        }
+
+        function stopBreathing() {
+            isBreathing = false;
+            clearInterval(breathingInterval);
+            
+            const animation = document.querySelector('.breathing-animation');
+            animation.classList.remove('active');
+            
+            const lungs = document.querySelectorAll('.lungs');
+            lungs.forEach(lung => {
+                lung.style.transform = 'translateX(-50%) scale(1)';
+            });
+            
+            document.querySelector('button[onclick="startBreathing()"]').classList.remove('active');
+        }
+
+        function showProcess() {
+            const infoPanel = document.getElementById('organ-info');
+            infoPanel.innerHTML = `
+                <h3>🔄 Processo da Respiração</h3>
+                <div style="background: #e3f2fd; padding: 15px; border-radius: 10px; margin: 10px 0;">
+                    <h4>📥 INSPIRAÇÃO (Entrada de Ar)</h4>
+                    <p>1. Diafragma contrai e desce<br>
+                    2. Caixa torácica expande<br>
+                    3. Pulmões se enchem de ar<br>
+                    4. Oxigênio entra nos alvéolos</p>
+                </div>
+                <div style="background: #fff3e0; padding: 15px; border-radius: 10px; margin: 10px 0;">
+                    <h4>📤 EXPIRAÇÃO (Saída de Ar)</h4>
+                    <p>1. Diafragma relaxa e sobe<br>
+                    2. Caixa torácica contrai<br>
+                    3. Pulmões expelem ar<br>
+                    4. Dióxido de carbono sai</p>
+                </div>
+                <p><strong>💡 Dica:</strong> Tente respirar profundamente e sinta seu diafragma trabalhando!</p>
+            `;
+        }
+
+        // Animação inicial
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                showProcess();
+            }, 1000);
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'986f7df0546b4ecb',t:'MTc1OTE5MDk3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
